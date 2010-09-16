@@ -1,0 +1,16 @@
+options:
+  sleep: 1
+
+routes:
+  defaults:
+    depth: 2
+    domain: same-sld
+    whitelist: ~
+    blacklist: ~
+    timeout: 10
+    http.auth: ~
+
+  - url: http://www.google.com/
+    depth: 1
+    whitelist:
+      - "/advanced_search"
