@@ -237,18 +237,17 @@ class Primer
         }
         // flexible policy (match TLD)
         if ($policy === 'same-tld') {
-            $pos = strrpos($source['host'], '.');
-            return substr($current['host'], -strlen($current['host'])+$pos) === substr($source['host'], -strlen($source['host'])+$pos);
+            $current['host'] = substr($current['host'], - (strlen($current['host']) - strrpos($current['host'], '.')));
+            $source['host'] = substr($source['host'], - (strlen($source['host']) - strrpos($source['host'], '.')));
+
+            return $current['host'] === $source['host'];
         }
         if ($policy !== 'same-sld') {
-            throw new UnexpectedValueException('Domain policy "'.$policy.'"" is unknown, use one of "any, same-sld, same-tld, strict"');
+            throw new \UnexpectedValueException('Domain policy "'.$policy.'"" is unknown, use one of "any, same-sld, same-tld, strict"');
         }
         // flexible policy (match SLD.TLD)
-        $pos = strrpos($source['host'], '.', strrpos($source['host'], '.') + 1);
-        if ($pos !== false) {
-            $source['host'] = substr($source['host'], $pos - strlen($source['host']) - 1);
-        }
-        return substr($current['host'], -strlen($source['host'])-1) === $source['host'];
+        preg_match('#(?:\.|^)([^.]+\.[^.]+)$#', $source['host'], $match);
+        return substr($current['host'], -strlen($match[1])) === $match[1];
     }
 
     /**
